@@ -1,2 +1,5 @@
-\c nc_games_test
-SELECT * FROM categories;
+\c nc_games
+
+SELECT * FROM reviews;
+
+SELECT * FROM comments;

@@ -1,9 +1,15 @@
-const format = require('pg-format');
-const db = require('../connection'); 
-const { formatCategoriesData, formatUsersData, formatReviewsData, formatCommentsData} = require('../utils/data-manipulation')
+const format = require("pg-format");
+const db = require("../connection");
+const {
+  formatCategoriesData,
+  formatUsersData,
+  formatReviewsData,
+  formatCommentsData,
+} = require("../utils/data-manipulation");
 const seed = async (data) => {
   const { categoryData, commentData, reviewData, userData } = data;
 
+  /* THE OLD WAY! */
   // return db
   //   .query('DROP TABLE IF EXISTS comments;')
   //   .then(()=>{
@@ -18,26 +24,34 @@ const seed = async (data) => {
   //   .then(()=>{// 1. create tables
   //     console.log('all tables dropped')
   //   })
-    await db.query('DROP TABLE IF EXISTS comments;');
-    await db.query('DROP TABLE IF EXISTS reviews;');
-    await db.query('DROP TABLE IF EXISTS users;');
-    await db.query('DROP TABLE IF EXISTS categories;');
-    console.log('all tables dropped')
+
+  await db.query("DROP TABLE IF EXISTS comments;");
+
+  await db.query("DROP TABLE IF EXISTS reviews;");
+
+  await db.query("DROP TABLE IF EXISTS users;");
+
+  await db.query("DROP TABLE IF EXISTS categories;");
+
+  console.log("all tables dropped");
+
   // 1. create tables
-    await db.query(`
+  await db.query(`
       CREATE TABLE categories (
         slug VARCHAR(40) UNIQUE PRIMARY KEY,
         description TEXT NOT NULL
       );
-    `)
-    await db.query(`
+    `);
+
+  await db.query(`
       CREATE TABLE users (
         username VARCHAR(40) UNIQUE PRIMARY KEY,
         avatar_url TEXT,
         name VARCHAR(55) NOT NULL
       );
-    `)
-    await db.query(`
+    `);
+
+  await db.query(`
       CREATE TABLE reviews (
         review_id SERIAL PRIMARY KEY,
         title VARCHAR(55) NOT NULL,
@@ -49,8 +63,9 @@ const seed = async (data) => {
         owner VARCHAR(40) REFERENCES users(username) NOT NULL,
         created_at DATE DEFAULT NOW()
       );
-    `)
-    await db.query(`
+    `);
+
+  await db.query(`
       CREATE TABLE comments (
         comment_id SERIAL PRIMARY KEY,
         author VARCHAR(40) REFERENCES users(username),
@@ -59,56 +74,69 @@ const seed = async (data) => {
         created_at DATE DEFAULT NOW(),
         body TEXT NOT NULL
       );
-    `)
-    console.log('All table created')
-    // 2. insert data
-    const formatedCategoriesData = formatCategoriesData(categoryData);
+    `);
 
-    const categoriesInsertString = format(`
+  console.log("All table created");
+
+  // 2. insert data
+  const formattedCategoriesData = formatCategoriesData(categoryData);
+  const categoriesInsertString = format(
+    `
       INSERT INTO categories
       (slug, description)
       VALUES
       %L
       RETURNING *;
-    `, formatedCategoriesData)
-    const categoriesTable = await db.query(categoriesInsertString)
-    //console.log(categoriesTable.rows)
-    
-    const formatedUsersData = formatUsersData(userData);
+    `,
+    formattedCategoriesData
+  );
+  const categoriesTable = await db.query(categoriesInsertString);
+  // console.log(categoriesTable.rows);
 
-    const usersInsertString = format(`
+  const formattedUsersData = formatUsersData(userData);
+  const usersInsertString = format(
+    `
       INSERT INTO users
       (username, name , avatar_url)
       VALUES
       %L
       RETURNING *;
-    `, formatedUsersData)
-    const usersTable =await db.query(usersInsertString);
-    //console.log(usersTable.rows)
-  
-    const formatedReviewsData = formatReviewsData(reviewData);
+    `,
+    formattedUsersData
+  );
+  const usersTable = await db.query(usersInsertString);
+  //console.log(usersTable.rows)
 
-    const reviewsInsertString = format(`
+  const formattedReviewsData = formatReviewsData(reviewData);
+  const reviewsInsertString = format(
+    `
     INSERT INTO reviews
     (title, review_body, designer, review_img_url, votes, category, owner, created_at)
     VALUES
       %L
       RETURNING *;
-    `, formatedReviewsData)
-    const reviewsTable = await db.query(reviewsInsertString);
-    //console.log(reviewsTable.rows)
+    `,
+    formattedReviewsData
+  );
+  const reviewsTable = await db.query(reviewsInsertString);
+  //console.log(reviewsTable.rows)
 
-    const formatedCommentsData = formatCommentsData(commentData, reviewsTable.rows );
-
-    const commentsInsertString = format(`
+  const formattedCommentsData = formatCommentsData(
+    commentData,
+    reviewsTable.rows
+  );
+  const commentsInsertString = format(
+    `
     INSERT INTO comments
     (author, review_id, votes, created_at, body)
     VALUES
       %L
       RETURNING *;
-    `, formatedCommentsData)
-    const commentsTable = await db.query(commentsInsertString);
-    console.log(commentsTable.rows)
+    `,
+    formattedCommentsData
+  );
+  const commentsTable = await db.query(commentsInsertString);
+  console.log(commentsTable.rows);
 };
 
 module.exports = seed;
