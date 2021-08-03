@@ -5,3 +5,22 @@ exports.getCategories = async (req,res) => {
    console.log({categories})
    res.status(200).send({categories});
 };
+
+
+
+
+
+
+
+
+/*
+const postRestaurant = async (req, res, next) => {
+    const restaurant = req.body;
+  try {
+    const restaurant = await insertRestaurant(restaurant)
+    res.status(201).send({ restaurant });
+  } catch (err) {
+      next(err);
+  };
+}
+*/
