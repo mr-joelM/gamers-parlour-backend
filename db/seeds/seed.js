@@ -136,7 +136,7 @@ const seed = async (data) => {
     formattedCommentsData
   );
   const commentsTable = await db.query(commentsInsertString);
-  console.log(commentsTable.rows);
+  //console.log(commentsTable.rows);
 };
 
 module.exports = seed;
