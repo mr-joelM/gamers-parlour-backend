@@ -6,6 +6,13 @@ exports.selectCategories = async ()=>{
 };
 
 
+
+
+
+
+
+
+
 /*
 const insertRestaurant = (restaurant) => {
     const allowedKeys = ['restaurant_name', 'area_id', 'cuisine', 'website'];

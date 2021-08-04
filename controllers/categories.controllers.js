@@ -13,6 +13,8 @@ exports.getCategories = async (req,res) => {
 
 
 
+
+
 /*
 const postRestaurant = async (req, res, next) => {
     const restaurant = req.body;

@@ -3,6 +3,7 @@ const apiRouter = require('./routers/api.router');
 const {handleCustomErrors, handlePsqlErrors, handleServerErrors } = require('./errors/index');
 const app = express();
 
+app.use(express.json());
 
 app.use('/api', apiRouter)
 
@@ -39,7 +40,7 @@ models dir => models.fs
 
 routers dir => all folders...
 
-error folders..
+
 
 
 */
