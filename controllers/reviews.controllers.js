@@ -15,8 +15,6 @@ exports.getReviewsById = (req, res, next) => {
         }else{
             res.status(200).send({review})
         }
-        
-        
     }).catch ((err) => {
         //console.log(err)
         next(err)});
