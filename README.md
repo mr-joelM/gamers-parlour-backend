@@ -90,15 +90,15 @@ _Here is a summary of all the endpoints. More detail about each endpoint is furt
 **Essential endpoints**
 
 ```http
-GET /api/categories
+*- GET /api/categories 
 ```
 
 > Time to go solo!
 
 ```http
-GET /api/reviews/:review_id
+*- GET /api/reviews/:review_id
 PATCH /api/reviews/:review_id
-GET /api/reviews
+*- GET /api/reviews
 GET /api/reviews/:review_id/comments
 POST /api/reviews/:review_id/comments
 GET /api
