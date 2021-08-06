@@ -26,7 +26,7 @@ describe("GET/api/categories", () => {
   });
 });
 
-describe.only("GET/api/reviews", () => {
+describe("GET/api/reviews", () => {
   it("should return status 200 , showing all reviews ", () => {
     return request(app)
       .get("/api/reviews")
@@ -81,7 +81,7 @@ describe.only("GET/api/reviews", () => {
           .get("/api/reviews?category='dexterity'")
           .expect(200)
           .then(({ body }) => {
-            console.log(body.reviews);
+            //console.log(body.reviews);
             body.reviews.forEach((object) => {
               expect(object.category).toBe("dexterity");
             });
@@ -124,6 +124,25 @@ describe("GET/api/reviews/:review_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request: wrong type value");
+      });
+  });
+});
+describe.only("GET/api/reviews/:review_id/comments", () => {
+  it("should an array of comments for the given `review_id`", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        //console.log(body.comments, "<= TEST")
+        body.comments.forEach((object) => {
+          expect(object).toMatchObject({
+            review_id: 2,
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
+        });
       });
   });
 });

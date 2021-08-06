@@ -35,7 +35,21 @@ exports.selectReviewsById = ({ review_id }) => {
     )
     .then((result) => {
       const review = result.rows[0];
-      console.log(review);
+      //console.log(review);
       return review;
+    });
+};
+
+exports.selectCommentsByReviewId = (req) => {
+  const { review_id } = req.params;
+  return db
+    .query(
+      `SELECT * FROM comments
+      WHERE comments.review_id= ${review_id};`
+    )
+    .then((result) => {
+      const comments = result.rows;
+      //console.log(comments);
+      return comments;
     });
 };
