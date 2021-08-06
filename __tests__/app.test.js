@@ -26,13 +26,13 @@ describe("GET/api/categories", () => {
   });
 });
 
-describe("GET/api/reviews", () => {
+describe.only("GET/api/reviews", () => {
   it("should return status 200 , showing all reviews ", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body }) => {
-        //console.log(body)
+        console.log(body);
         expect(body.reviews).not.toHaveLength(0);
         body.reviews.forEach((review) => {
           expect(review).toMatchObject({
@@ -78,7 +78,7 @@ describe("GET/api/reviews", () => {
     describe("filtered by category", () => {
       it("should filtered by category", () => {
         return request(app)
-          .get("/api/reviews?category='dexterity'")
+          .get("/api/reviews?category=dexterity")
           .expect(200)
           .then(({ body }) => {
             //console.log(body.reviews);
@@ -109,7 +109,7 @@ describe("GET/api/reviews/:review_id", () => {
         });
       });
   });
-  it("should return 400, if review requested by id doesnt exist ", () => {
+  it("should return 404, if review requested by id does not exist ", () => {
     return request(app)
       .get("/api/reviews/2000")
       .expect(404)
@@ -127,7 +127,7 @@ describe("GET/api/reviews/:review_id", () => {
       });
   });
 });
-describe.only("GET/api/reviews/:review_id/comments", () => {
+describe("GET/api/reviews/:review_id/comments", () => {
   it("should an array of comments for the given `review_id`", () => {
     return request(app)
       .get("/api/reviews/2/comments")
