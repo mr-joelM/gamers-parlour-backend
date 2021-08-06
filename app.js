@@ -16,7 +16,7 @@ app.use('/api', apiRouter)
 
 
 app.all('*', ()=>{
-    console.log('request made!')
+   res.status(404).send({msg: 'wrong request, path does not exist'})
 })
 
 // error handling 
