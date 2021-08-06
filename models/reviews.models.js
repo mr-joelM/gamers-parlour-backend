@@ -5,6 +5,32 @@ exports.selectReviews = (req) => {
   const { sorted_by = "created_at" } = req.query;
   const { order = "DESC" } = req.query;
   const { category } = req.query;
+  /// sorted_by filtering
+  const sortOptions = [
+    `owner`,
+    `title`,
+    `review_id`,
+    `category`,
+    `review_img_url`,
+    `created_at`,
+    `votes`,
+    `comment_count`,
+    undefined,
+  ];
+  if (!sortOptions.includes(req.query.sorted_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request: Invalid sort query",
+    });
+  }
+
+  const orderOptions = ["asc", "desc", undefined];
+  if (!orderOptions.includes(req.query.order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request: Invalid order query",
+    });
+  }
 
   let reviewsTable = `
   SELECT reviews.*, COUNT (comments) AS comment_count

@@ -55,10 +55,18 @@ describe.only("GET/api/reviews", () => {
           .get("/api/reviews?sorted_by=votes")
           .expect(200)
           .then(({ body }) => {
-            //console.log(body.reviews)
+            console.log(body.reviews);
             expect(body.reviews).toBeSortedBy("votes", {
               descending: true,
             });
+          });
+      });
+      it('should return a 400 and msg "Bad request: Invalid sort query" if wrong query input for sorted_by', () => {
+        return request(app)
+          .get("/api/reviews?sorted_by=whatever")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request: Invalid sort query");
           });
       });
     });
@@ -72,6 +80,14 @@ describe.only("GET/api/reviews", () => {
             expect(body.reviews).toBeSortedBy("created_at", {
               ascending: true,
             });
+          });
+      });
+      it('should return a 400 and msg "Bad request: Invalid order query" if wrong query input for sorted_by', () => {
+        return request(app)
+          .get("/api/reviews?order=whatever")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request: Invalid order query");
           });
       });
     });
