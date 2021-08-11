@@ -359,7 +359,7 @@ describe("GET/api/users", () => {
       });
   });
 });
-describe("GET/api/users/username", () => {
+describe("GET/api/users/:username", () => {
   it("should return 200, showing the user requested by username", () => {
     return request(app)
       .get("/api/users/mallionaire")
@@ -380,6 +380,32 @@ describe("GET/api/users/username", () => {
       .then(({ body }) => {
         //console.log(body);
         expect(body.msg).toBe("Not found: username not found");
+      });
+  });
+});
+describe.only("GET/api/comments/:comment_id", () => {
+  it("should return 200, showing the comment requested by id", () => {
+    return request(app)
+      .get("/api/comments/2")
+      .expect(200)
+      .then(({ body }) => {
+        //console.log(body.comment);
+        expect(body.comment).toMatchObject({
+          comment_id: 2,
+          author: expect.any(String),
+          review_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          body: expect.any(String),
+        });
+      });
+  });
+  it("return 404, if comment_id does not exist", () => {
+    return request(app)
+      .get("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found: comment id not found");
       });
   });
 });
