@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const reviews = require("../db/data/test-data/reviews");
+//const reviews = require("../db/data/test-data/reviews");
 
 exports.selectReviews = async (req) => {
   const { sorted_by = "created_at" } = req.query;
@@ -124,7 +124,7 @@ exports.updateReviewsById = async (req) => {
       [inc_votes, review_id]
     )
     .then((result) => {
-      console.log(result.rows[0]);
+      //console.log(result.rows[0]);
       return result.rows[0];
     });
 };

@@ -160,7 +160,7 @@ describe("PATCH/api/reviews/:review_id", () => {
       .send({ inc_votes: 1 })
       .expect(200)
       .then(({ body }) => {
-        console.log(body.updatedVote, "body");
+        //console.log(body.updatedVote, "body");
         expect(body.updatedVote).toEqual({
           review_id: 2,
           title: "Jenga",
@@ -181,7 +181,7 @@ describe("PATCH/api/reviews/:review_id", () => {
       .send({ inc_votes: -3 })
       .expect(200)
       .then(({ body }) => {
-        console.log(body.updatedVote, "body");
+        //console.log(body.updatedVote, "body");
         expect(body.updatedVote).toEqual({
           review_id: 2,
           title: "Jenga",
@@ -222,7 +222,7 @@ describe("PATCH/api/reviews/:review_id", () => {
       .send({ inc_votes: 1 })
       .expect(404)
       .then(({ body }) => {
-        console.log(body, "body");
+        //console.log(body, "body");
         expect(body.msg).toBe("Not found: id number does not exist");
       });
   });
@@ -274,7 +274,7 @@ describe("POST/api/reviews/:reviews_id/comments", () => {
       })
       .expect(201)
       .then(({ body }) => {
-        console.log(body, "<-- body");
+        //console.log(body, "<-- body");
         expect(body.newComment).toEqual({
           comment_id: 7,
           author: "bainesface",
@@ -340,6 +340,46 @@ describe("POST/api/reviews/:reviews_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request: invalid data");
+      });
+  });
+});
+
+describe("GET/api/users", () => {
+  it("should return status 200 an array of object with all users username", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        //console.log(body);
+        body.allUsersUsernames.forEach((object) => {
+          expect(object).toMatchObject({
+            username: expect.any(String),
+          });
+        });
+      });
+  });
+});
+describe("GET/api/users/username", () => {
+  it("should return 200, showing the user requested by username", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then(({ body }) => {
+        //console.log(body.user);
+        expect(body.user).toMatchObject({
+          username: expect.any(String),
+          avatar_url: expect.any(String),
+          name: expect.any(String),
+        });
+      });
+  });
+  it("should return 404, if user requested by username does not exist ", () => {
+    return request(app)
+      .get("/api/users/bob")
+      .expect(404)
+      .then(({ body }) => {
+        //console.log(body);
+        expect(body.msg).toBe("Not found: username not found");
       });
   });
 });

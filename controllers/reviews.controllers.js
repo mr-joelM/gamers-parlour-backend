@@ -12,7 +12,7 @@ exports.getReviews = (req, res, next) => {
       res.status(200).send({ reviews });
     })
     .catch((err) => {
-      console.log(err, "<= *CATCH ERROR*");
+      //console.log(err, "<= *CATCH ERROR*");
       next(err);
     });
 };
@@ -28,7 +28,7 @@ exports.getReviewsById = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log(err, "<= *CATCH ERROR*");
+      //console.log(err, "<= *CATCH ERROR*");
       next(err);
     });
 };
@@ -39,7 +39,7 @@ exports.patchReviewsById = (req, res, next) => {
       res.status(200).send({ updatedVote });
     })
     .catch((err) => {
-      console.log(err, "<= *CATCH ERROR*");
+      //console.log(err, "<= *CATCH ERROR*");
       next(err);
     });
 };
@@ -51,7 +51,7 @@ exports.getCommentsByReviewId = (req, res, next) => {
       res.status(200).send({ comments });
     })
     .catch((err) => {
-      console.log(err, "<= *CATCH ERROR*");
+      //console.log(err, "<= *CATCH ERROR*");
       next(err);
     });
 };
@@ -63,7 +63,7 @@ exports.postCommentsByReviewId = (req, res, next) => {
       res.status(201).send({ newComment });
     })
     .catch((err) => {
-      console.log(err, "<= *CATCH ERROR*");
+      //console.log(err, "<= *CATCH ERROR*");
       next(err);
     });
 };

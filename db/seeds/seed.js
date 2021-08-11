@@ -33,7 +33,7 @@ const seed = async (data) => {
 
   await db.query("DROP TABLE IF EXISTS categories;");
 
-  console.log("all tables dropped");
+  console.log("All tables dropped");
 
   // 1. create tables
   await db.query(`

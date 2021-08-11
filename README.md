@@ -110,8 +110,8 @@ GET /api
 
 ```http
 DELETE /api/comments/:comment_id
-GET /api/users
-GET /api/users/:username
+*- GET /api/users
+*- GET /api/users/:username
 PATCH /api/comments/:comment_id
 ```
 
