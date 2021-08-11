@@ -121,6 +121,7 @@ describe("GET/api/reviews/:review_id", () => {
       .get("/api/reviews/2")
       .expect(200)
       .then(({ body }) => {
+        //console.log(body.review);
         expect(body.review).toMatchObject({
           review_id: 2,
           title: expect.any(String),
@@ -151,6 +152,82 @@ describe("GET/api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("PATCH/api/reviews/:review_id", () => {
+  it("should return a 200 and should increment the current review's vote property by 1", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.updatedVote, "body");
+        expect(body.updatedVote).toEqual({
+          review_id: 2,
+          title: "Jenga",
+          review_body: "Fiddly fun for all the family",
+          designer: "Leslie Scott",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 6,
+          category: "dexterity",
+          owner: "philippaclaire9",
+          created_at: "2021-01-18T10:01:41.251Z",
+        });
+      });
+  });
+  it("should return a 200 and should decrement the current review's vote property by 3", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send({ inc_votes: -3 })
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.updatedVote, "body");
+        expect(body.updatedVote).toEqual({
+          review_id: 2,
+          title: "Jenga",
+          review_body: "Fiddly fun for all the family",
+          designer: "Leslie Scott",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          votes: 2,
+          category: "dexterity",
+          owner: "philippaclaire9",
+          created_at: "2021-01-18T10:01:41.251Z",
+        });
+      });
+  });
+  it("should return a 400 and error message if inc_votes is not a number", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send({ inc_votes: "whatever" })
+      .expect(400)
+      .then(({ body }) => {
+        //console.log(body.msg, "body.msg");
+        expect(body.msg).toBe("Bad request: wrong type value");
+      });
+  });
+  it("should return a 400 and error message if review_id is not a number", () => {
+    return request(app)
+      .patch("/api/reviews/whatever")
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body }) => {
+        //console.log(body.msg, "body.msg");
+        expect(body.msg).toBe("Bad request: wrong type value");
+      });
+  });
+  it("should return a 404 and error message if review_id is not found", () => {
+    return request(app)
+      .patch("/api/reviews/99999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body }) => {
+        console.log(body, "body");
+        expect(body.msg).toBe("Not found: id number does not exist");
+      });
+  });
+});
+
 describe("GET/api/reviews/:review_id/comments", () => {
   it("should an array of comments for the given `review_id`", () => {
     return request(app)
@@ -186,6 +263,7 @@ describe("GET/api/reviews/:review_id/comments", () => {
       });
   });
 });
+
 describe("POST/api/reviews/:reviews_id/comments", () => {
   it("should post a new comment to the given id review with a 201 status code", () => {
     return request(app)

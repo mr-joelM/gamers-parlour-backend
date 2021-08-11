@@ -92,6 +92,43 @@ exports.selectReviewsById = ({ review_id }) => {
     });
 };
 
+exports.updateReviewsById = async (req) => {
+  const { review_id } = req.params;
+  const { inc_votes } = req.body;
+  //console.log(review_id, "<==>", inc_votes);
+  let maxIdNum = await db
+    .query(
+      `
+      SELECT MAX (review_id)
+      FROM reviews
+    `
+    )
+    .then((result) => {
+      return result.rows[0]["max"];
+    });
+  //console.log(review_id, " <= review_id");
+  //console.log(maxIdNum, " <= maxIdNum");
+  if (review_id > maxIdNum) {
+    return Promise.reject({
+      status: 404,
+      msg: "Not found: id number does not exist",
+    });
+  }
+
+  return db
+    .query(
+      `UPDATE reviews
+    SET votes = votes + $1
+    WHERE review_id = $2
+    RETURNING*;`,
+      [inc_votes, review_id]
+    )
+    .then((result) => {
+      console.log(result.rows[0]);
+      return result.rows[0];
+    });
+};
+
 exports.selectCommentsByReviewId = async (req) => {
   const { review_id } = req.params;
   let maxIdNum = await db
@@ -104,7 +141,7 @@ exports.selectCommentsByReviewId = async (req) => {
     .then((result) => {
       return result.rows[0]["max"];
     });
-  //console.log(req.params, " <= req.params");
+  //console.log(review_id, " <= review_id");
   //console.log(maxIdNum, " <= maxIdNum");
   if (review_id > maxIdNum) {
     return Promise.reject({

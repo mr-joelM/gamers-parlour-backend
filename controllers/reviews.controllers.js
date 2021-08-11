@@ -1,6 +1,7 @@
 const {
   selectReviews,
   selectReviewsById,
+  updateReviewsById,
   selectCommentsByReviewId,
   addCommentsByReviewId,
 } = require("../models/reviews.models");
@@ -25,6 +26,17 @@ exports.getReviewsById = (req, res, next) => {
       } else {
         res.status(200).send({ review });
       }
+    })
+    .catch((err) => {
+      console.log(err, "<= *CATCH ERROR*");
+      next(err);
+    });
+};
+
+exports.patchReviewsById = (req, res, next) => {
+  updateReviewsById(req)
+    .then((updatedVote) => {
+      res.status(200).send({ updatedVote });
     })
     .catch((err) => {
       console.log(err, "<= *CATCH ERROR*");
