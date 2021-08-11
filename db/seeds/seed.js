@@ -61,7 +61,7 @@ const seed = async (data) => {
         votes INT DEFAULT 0,
         category VARCHAR(40) REFERENCES categories(slug),
         owner VARCHAR(40) REFERENCES users(username) NOT NULL,
-        created_at DATE DEFAULT NOW()
+        created_at TIMESTAMP DEFAULT NOW()NOT NULL
       );
     `);
 
@@ -71,7 +71,7 @@ const seed = async (data) => {
         author VARCHAR(40) REFERENCES users(username),
         review_id INT REFERENCES reviews(review_id),
         votes INT DEFAULT 0,
-        created_at DATE DEFAULT NOW(),
+        created_at TIMESTAMP DEFAULT NOW()NOT NULL,
         body TEXT NOT NULL
       );
     `);

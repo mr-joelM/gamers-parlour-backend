@@ -2,6 +2,7 @@ const {
   selectReviews,
   selectReviewsById,
   selectCommentsByReviewId,
+  addCommentsByReviewId,
 } = require("../models/reviews.models");
 
 exports.getReviews = (req, res, next) => {
@@ -20,7 +21,7 @@ exports.getReviewsById = (req, res, next) => {
   selectReviewsById(reviewId)
     .then((review) => {
       if (review === undefined) {
-        next({ status: 404, msg: "Bad request, id number does not exist" });
+        next({ status: 404, msg: "Not found: id number does not exist" });
       } else {
         res.status(200).send({ review });
       }
@@ -34,7 +35,20 @@ exports.getReviewsById = (req, res, next) => {
 exports.getCommentsByReviewId = (req, res, next) => {
   selectCommentsByReviewId(req)
     .then((comments) => {
+      //console.log({ comments }, "<= comments");
       res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      console.log(err, "<= *CATCH ERROR*");
+      next(err);
+    });
+};
+
+exports.postCommentsByReviewId = (req, res, next) => {
+  //console.log("in controllers");
+  addCommentsByReviewId(req)
+    .then((newComment) => {
+      res.status(201).send({ newComment });
     })
     .catch((err) => {
       console.log(err, "<= *CATCH ERROR*");
