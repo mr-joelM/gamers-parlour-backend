@@ -1,4 +1,7 @@
-const { selectCommentsByCommentId } = require("../models/comments.models");
+const {
+  selectCommentsByCommentId,
+  updateCommentsByCommentId,
+} = require("../models/comments.models");
 
 exports.getCommentsByCommentId = (req, res, next) => {
   selectCommentsByCommentId(req)
@@ -6,11 +9,18 @@ exports.getCommentsByCommentId = (req, res, next) => {
       res.status(200).send({ comment });
     })
     .catch((err) => {
-      console.log(err, "<= *CATCH ERROR*");
+      //console.log(err, "<= *CATCH ERROR*");
       next(err);
     });
 };
 
 exports.patchCommentsByCommentId = (req, res, next) => {
-  //console.log("in controllers!");
+  updateCommentsByCommentId(req)
+    .then((updatedComment) => {
+      res.status(200).send({ updatedComment });
+    })
+    .catch((err) => {
+      //console.log(err, "<= *CATCH ERROR*");
+      next(err);
+    });
 };

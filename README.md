@@ -101,7 +101,7 @@ _Here is a summary of all the endpoints. More detail about each endpoint is furt
 *- GET /api/reviews
 *- GET /api/reviews/:review_id/comments
 *- POST /api/reviews/:review_id/comments
-GET /api
+*- GET /api
 ```
 
 > Hosting and README time!

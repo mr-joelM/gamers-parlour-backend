@@ -18,14 +18,9 @@ exports.getReviews = (req, res, next) => {
 };
 
 exports.getReviewsById = (req, res, next) => {
-  const reviewId = req.params;
-  selectReviewsById(reviewId)
+  selectReviewsById(req)
     .then((review) => {
-      if (review === undefined) {
-        next({ status: 404, msg: "Not found: id number does not exist" });
-      } else {
-        res.status(200).send({ review });
-      }
+      res.status(200).send({ review });
     })
     .catch((err) => {
       //console.log(err, "<= *CATCH ERROR*");

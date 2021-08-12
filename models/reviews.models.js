@@ -74,7 +74,29 @@ exports.selectReviews = async (req) => {
   });
 };
 
-exports.selectReviewsById = ({ review_id }) => {
+exports.selectReviewsById = async (req) => {
+  const { review_id } = req.params;
+  let reviewIdOptions = await db
+    .query(
+      `
+    SELECT DISTINCT review_id
+    FROM reviews;
+  `
+    )
+    .then((result) => {
+      //console.log(result.rows, "<==result.rows");
+      return result.rows.map((index) => {
+        return index.review_id;
+      });
+    });
+  //console.log(typeof reviewIdOptions[0], "<=reviewIdOptions");
+  //console.log(typeof req.params.review_id, "<=req.params.review_id");
+  if (!reviewIdOptions.includes(parseInt(req.params.review_id))) {
+    return Promise.reject({
+      status: 404,
+      msg: "Not found: review id not found",
+    });
+  }
   return db
     .query(
       `SELECT reviews.*, COUNT (comments) AS comment_count
@@ -95,22 +117,26 @@ exports.updateReviewsById = async (req) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
   //console.log(review_id, "<==>", inc_votes);
-  let maxIdNum = await db
+
+  let reviewIdOptions = await db
     .query(
       `
-      SELECT MAX (review_id)
-      FROM reviews
-    `
+    SELECT DISTINCT review_id
+    FROM reviews;
+  `
     )
     .then((result) => {
-      return result.rows[0]["max"];
+      //console.log(result.rows, "<==result.rows");
+      return result.rows.map((index) => {
+        return index.review_id;
+      });
     });
-  //console.log(review_id, " <= review_id");
-  //console.log(maxIdNum, " <= maxIdNum");
-  if (review_id > maxIdNum) {
+  //console.log(typeof reviewIdOptions[0], "<=reviewIdOptions");
+  //console.log(typeof req.params.review_id, "<=req.params.review_id");
+  if (!reviewIdOptions.includes(parseInt(req.params.review_id))) {
     return Promise.reject({
       status: 404,
-      msg: "Not found: id number does not exist",
+      msg: "Not found: review id not found",
     });
   }
 
@@ -130,22 +156,26 @@ exports.updateReviewsById = async (req) => {
 
 exports.selectCommentsByReviewId = async (req) => {
   const { review_id } = req.params;
-  let maxIdNum = await db
+
+  let reviewIdOptions = await db
     .query(
       `
-      SELECT MAX (review_id)
-      FROM reviews
-    `
+    SELECT DISTINCT review_id
+    FROM reviews;
+  `
     )
     .then((result) => {
-      return result.rows[0]["max"];
+      //console.log(result.rows, "<==result.rows");
+      return result.rows.map((index) => {
+        return index.review_id;
+      });
     });
-  //console.log(review_id, " <= review_id");
-  //console.log(maxIdNum, " <= maxIdNum");
-  if (review_id > maxIdNum) {
+  //console.log(typeof reviewIdOptions[0], "<=reviewIdOptions");
+  //console.log(typeof req.params.review_id, "<=req.params.review_id");
+  if (!reviewIdOptions.includes(parseInt(req.params.review_id))) {
     return Promise.reject({
       status: 404,
-      msg: "Not found: id number does not exist",
+      msg: "Not found: review id not found",
     });
   }
 
@@ -161,11 +191,33 @@ exports.selectCommentsByReviewId = async (req) => {
     });
 };
 
-exports.addCommentsByReviewId = (req) => {
+exports.addCommentsByReviewId = async (req) => {
   const { review_id } = req.params;
   const { username, body } = req.body;
   //console.log(review_id);
   //console.log(username, body);
+
+  let reviewIdOptions = await db
+    .query(
+      `
+    SELECT DISTINCT review_id
+    FROM reviews;
+  `
+    )
+    .then((result) => {
+      //console.log(result.rows, "<==result.rows");
+      return result.rows.map((index) => {
+        return index.review_id;
+      });
+    });
+  //console.log(typeof reviewIdOptions[0], "<=reviewIdOptions");
+  //console.log(typeof req.params.review_id, "<=req.params.review_id");
+  if (!reviewIdOptions.includes(parseInt(req.params.review_id))) {
+    return Promise.reject({
+      status: 404,
+      msg: "Not found: review id not found",
+    });
+  }
 
   return db
     .query(
