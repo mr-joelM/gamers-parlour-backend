@@ -16,7 +16,9 @@ exports.selectCommentsByCommentId = async (req) => {
         return index.comment_id;
       });
     });
-  if (!commentIdOptions.includes(req.params.comment_id)) {
+  //console.log(typeof commentIdOptions[0], "<=commentIdOptions");
+  //console.log(typeof req.params.comment_id, "<=req.params.comment_id");
+  if (!commentIdOptions.includes(parseInt(req.params.comment_id))) {
     return Promise.reject({
       status: 404,
       msg: "Not found: comment id not found",

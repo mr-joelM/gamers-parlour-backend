@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-//const reviews = require("../db/data/test-data/reviews");
 
 exports.selectReviews = async (req) => {
   const { sorted_by = "created_at" } = req.query;

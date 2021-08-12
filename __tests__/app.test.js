@@ -383,7 +383,7 @@ describe("GET/api/users/:username", () => {
       });
   });
 });
-describe.only("GET/api/comments/:comment_id", () => {
+describe("GET/api/comments/:comment_id", () => {
   it("should return 200, showing the comment requested by id", () => {
     return request(app)
       .get("/api/comments/2")
@@ -406,6 +406,53 @@ describe.only("GET/api/comments/:comment_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Not found: comment id not found");
+      });
+  });
+});
+
+describe.only("Get/api", () => {
+  it("should return a list of all endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          "GET /api": {
+            description:
+              "serves up a json representation of all the available endpoints of the api",
+          },
+          "GET /api/categories": {
+            description: "serves an array of all categories",
+            queries: [],
+            exampleResponse: {
+              categories: [
+                {
+                  description:
+                    "Players attempt to uncover each other's hidden role",
+                  slug: "Social deduction",
+                },
+              ],
+            },
+          },
+          "GET /api/reviews": {
+            description: "serves an array of all reviews",
+            queries: ["category", "sort_by", "order"],
+            exampleResponse: {
+              reviews: [
+                {
+                  title: "One Night Ultimate Werewolf",
+                  designer: "Akihisa Okui",
+                  owner: "happyamy2016",
+                  review_img_url:
+                    "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                  category: "hidden-roles",
+                  created_at: 1610964101251,
+                  votes: 5,
+                },
+              ],
+            },
+          },
+        });
       });
   });
 });
