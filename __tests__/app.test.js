@@ -163,6 +163,64 @@ describe("reviews", () => {
         });
       });
     });
+    describe("pagination", () => {
+      it("should limit the number of reviews per pages ", () => {
+        return request(app)
+          .get("/api/reviews?limit=5")
+          .expect(200)
+          .then(({ body }) => {
+            //console.log(body);
+            expect(body.reviews).not.toHaveLength(0);
+            expect(body.reviews).toHaveLength(5);
+            body.reviews.forEach((review) => {
+              expect(review).toMatchObject({
+                review_id: expect.any(Number),
+                title: expect.any(String),
+                review_body: expect.any(String),
+                designer: expect.any(String),
+                review_img_url: expect.any(String),
+                votes: expect.any(Number),
+                category: expect.any(String),
+                owner: expect.any(String),
+              });
+            });
+          });
+      });
+      it("should limit the number of reviews per pages to defaults to 10 if none reqstd", () => {
+        return request(app)
+          .get("/api/reviews")
+          .expect(200)
+          .then(({ body }) => {
+            //console.log(body);
+            expect(body.reviews).not.toHaveLength(0);
+            expect(body.reviews).toHaveLength(10);
+          });
+      });
+      it("should return reviews 6-10 if page 2 is reqstd with a limit of 5", () => {
+        return request(app)
+          .get("/api/reviews?limit=5&page=2&order=asc&sorted_by=review_id")
+          .expect(200)
+          .then(({ body }) => {
+            //console.log(body);
+            expect(body.reviews).not.toHaveLength(0);
+            expect(body.reviews).toHaveLength(5);
+            expect(body.reviews[0].review_id).toBe(6);
+            expect(body.reviews[1].review_id).toBe(7);
+            expect(body.reviews[2].review_id).toBe(8);
+            expect(body.reviews[3].review_id).toBe(9);
+            expect(body.reviews[4].review_id).toBe(10);
+          });
+      });
+      it("should return 404 if page 20000", () => {
+        return request(app)
+          .get("/api/reviews?page=20000")
+          .expect(404)
+          .then(({ body }) => {
+            //console.log(body);
+            expect(body.msg).toBe("Not found: no review found");
+          });
+      });
+    });
   });
 
   describe("GET/api/reviews/:review_id", () => {
@@ -190,15 +248,15 @@ describe("reviews", () => {
         .expect(404)
         .then(({ body }) => {
           //console.log(body);
-          expect(body.msg).toBe("Not found: review id not found");
+          expect(body.msg).toBe("Not found: query not found");
         });
     });
-    it("return 404, if review_id is not a number", () => {
+    it("return 400, if review_id is not a number", () => {
       return request(app)
         .get("/api/reviews/whatever")
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Not found: review id not found");
+          expect(body.msg).toBe("Bad request: wrong type value");
         });
     });
   });
@@ -279,7 +337,7 @@ describe("reviews", () => {
   });
 
   describe("GET/api/reviews/:review_id/comments", () => {
-    it("should an array of comments for the given `review_id`", () => {
+    it("should give an array of comments for the given `review_id`", () => {
       return request(app)
         .get("/api/reviews/2/comments")
         .expect(200)
@@ -296,12 +354,12 @@ describe("reviews", () => {
           });
         });
     });
-    it("return 404, if review_id is not a number", () => {
+    it("return 400, if review_id is not a number", () => {
       return request(app)
         .get("/api/reviews/whatever/comments")
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Not found: review id not found");
+          expect(body.msg).toBe("Bad request: check your query");
         });
     });
     it("return 404, if review_id does not exist", () => {
@@ -309,12 +367,33 @@ describe("reviews", () => {
         .get("/api/reviews/9999/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Not found: review id not found");
+          expect(body.msg).toBe("Not found: query not found");
         });
+    });
+    describe("pagination", () => {
+      it("should limit the number of comments at 2 if requested", () => {
+        return request(app)
+          .get("/api/reviews/2/comments?limit=2")
+          .expect(200)
+          .then(({ body }) => {
+            //console.log(body.comments, "<= TEST");
+            expect(body.comments).not.toHaveLength(0);
+            expect(body.comments).toHaveLength(2);
+          });
+      });
+      it("should return 404 if page 20000", () => {
+        return request(app)
+          .get("/api/reviews/2/comments?page=20000")
+          .expect(404)
+          .then(({ body }) => {
+            //console.log(body);
+            expect(body.msg).toBe("Not found: query not found");
+          });
+      });
     });
   });
 
-  describe.only("POST/api/reviews/:reviews_id/comments", () => {
+  describe("POST/api/reviews/:reviews_id/comments", () => {
     it("should post a new comment to the given id review with a 201 status code", () => {
       return request(app)
         .post("/api/reviews/2/comments")
@@ -514,6 +593,25 @@ describe("comments", () => {
         .expect(404)
         .then(({ body }) => {
           //console.log(body, "body");
+          expect(body.msg).toBe("Not found: comment id not found");
+        });
+    });
+  });
+  describe("DELETE/api/comments/:comment_id", () => {
+    it("should return 204, deleting the comment requested by id", () => {
+      return request(app)
+        .delete("/api/comments/2")
+        .expect(204)
+        .then((erasedComment) => {
+          //console.log(erasedComment);
+          expect(erasedComment.statusCode).toBe(204);
+        });
+    });
+    it("return 404, if comment_id does not exist", () => {
+      return request(app)
+        .delete("/api/comments/9999")
+        .expect(404)
+        .then(({ body }) => {
           expect(body.msg).toBe("Not found: comment id not found");
         });
     });

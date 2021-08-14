@@ -109,10 +109,10 @@ _Here is a summary of all the endpoints. More detail about each endpoint is furt
 **Next endpoints to work through**
 
 ```http
-DELETE /api/comments/:comment_id
+*- DELETE /api/comments/:comment_id
 *- GET /api/users
 *- GET /api/users/:username
-PATCH /api/comments/:comment_id
+*- PATCH /api/comments/:comment_id
 ```
 
 ---

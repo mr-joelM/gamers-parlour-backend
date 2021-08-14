@@ -9,6 +9,12 @@ const {
 exports.getReviews = (req, res, next) => {
   selectReviews(req)
     .then((reviews) => {
+      if (reviews.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Not found: no review found",
+        });
+      }
       res.status(200).send({ reviews });
     })
     .catch((err) => {
@@ -42,6 +48,12 @@ exports.patchReviewsById = (req, res, next) => {
 exports.getCommentsByReviewId = (req, res, next) => {
   selectCommentsByReviewId(req)
     .then((comments) => {
+      if (comments.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Not found: query not found",
+        });
+      }
       //console.log({ comments }, "<= comments");
       res.status(200).send({ comments });
     })

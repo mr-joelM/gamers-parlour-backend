@@ -1,9 +1,13 @@
 const db = require("../db/connection");
+const { checkIfExist } = require("../db/utils/utils");
 
 exports.selectReviews = async (req) => {
   const { sorted_by = "created_at" } = req.query;
   const { order = "DESC" } = req.query;
   const { category } = req.query;
+  const { limit = 10 } = req.query;
+  const { page = 1 } = req.query;
+
   /// sorted_by filtering
   const sortOptions = [
     `owner`,
@@ -31,72 +35,57 @@ exports.selectReviews = async (req) => {
     });
   }
   /// category filtering
-  let categoryOptions = await db
-    .query(
-      `
+
+  if (category) {
+    let categoryOptions = await db
+      .query(
+        `
     SELECT DISTINCT category
     FROM reviews;
   `
-    )
-    .then((result) => {
-      return result.rows.map((index) => {
-        return index.category;
+      )
+      .then((result) => {
+        return result.rows.map((index) => {
+          return index.category;
+        });
       });
-    });
-  categoryOptions.push(undefined);
-  //console.log(categoryOptions, "<= categoryOptions");
-  if (!categoryOptions.includes(req.query.category)) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad request: Invalid category query",
-    });
+    categoryOptions.push(undefined);
+    //console.log(categoryOptions, "<= categoryOptions");
+    if (!categoryOptions.includes(req.query.category)) {
+      return Promise.reject({
+        status: 400,
+        msg: "Bad request: Invalid category query",
+      });
+    }
   }
-
+  let offset = (page - 1) * limit;
+  let dollarSign = [limit, offset];
   let reviewsTable = `
   SELECT reviews.*, COUNT (comments) AS comment_count
   FROM reviews 
   LEFT JOIN comments ON reviews.review_id = comments.review_id `;
 
   if (req.query.category != undefined) {
-    reviewsTable += `WHERE reviews.category = '${category}' `;
+    reviewsTable += `WHERE reviews.category = $3 `;
+    dollarSign.push(category);
   }
 
   reviewsTable += ` GROUP BY reviews.review_id
-        ORDER BY ${sorted_by} ${order} ;`;
+        ORDER BY ${sorted_by} ${order} LIMIT $1 OFFSET $2;`;
 
   //console.log(req.query, "<= req.query");
   //console.log(reviewsTable, "<= reviewsTable");
-
-  return db.query(reviewsTable).then((results) => {
+  //console.log(dollarSign, "<= dollarSign");
+  return db.query(reviewsTable, dollarSign).then((results) => {
     //console.log(results.rows, results.rows.length);
     const reviews = results.rows;
     return reviews;
   });
 };
 
-exports.selectReviewsById = async (req) => {
+exports.selectReviewsById = (req) => {
   const { review_id } = req.params;
-  let reviewIdOptions = await db
-    .query(
-      `
-    SELECT DISTINCT review_id
-    FROM reviews;
-  `
-    )
-    .then((result) => {
-      //console.log(result.rows, "<==result.rows");
-      return result.rows.map((index) => {
-        return index.review_id;
-      });
-    });
-  //console.log(typeof reviewIdOptions[0], "<=reviewIdOptions");
-  //console.log(typeof req.params.review_id, "<=req.params.review_id");
-  if (!reviewIdOptions.includes(parseInt(req.params.review_id))) {
-    return Promise.reject({
-      status: 404,
-      msg: "Not found: review id not found",
-    });
-  }
+
   return db
     .query(
       `SELECT reviews.*, COUNT (comments) AS comment_count
@@ -107,9 +96,14 @@ exports.selectReviewsById = async (req) => {
       [review_id]
     )
     .then((result) => {
-      const review = result.rows[0];
-      //console.log(review);
-      return review;
+      //console.log(result.rows, "<=result.rows");
+      if (result.rows.length === 0) {
+        return checkIfExist(`reviews`, `review_id`, review_id); /*.then(() => {
+          console.log(result.rows[0], " after checkIfExist");
+          return result.rows[0];
+        });*/
+      }
+      return result.rows[0];
     });
 };
 
@@ -156,38 +150,24 @@ exports.updateReviewsById = async (req) => {
 
 exports.selectCommentsByReviewId = async (req) => {
   const { review_id } = req.params;
-
-  let reviewIdOptions = await db
-    .query(
-      `
-    SELECT DISTINCT review_id
-    FROM reviews;
-  `
-    )
-    .then((result) => {
-      //console.log(result.rows, "<==result.rows");
-      return result.rows.map((index) => {
-        return index.review_id;
-      });
-    });
-  //console.log(typeof reviewIdOptions[0], "<=reviewIdOptions");
-  //console.log(typeof req.params.review_id, "<=req.params.review_id");
-  if (!reviewIdOptions.includes(parseInt(req.params.review_id))) {
-    return Promise.reject({
-      status: 404,
-      msg: "Not found: review id not found",
-    });
-  }
+  const { limit = 10 } = req.query;
+  const { page = 1 } = req.query;
+  let offset = (page - 1) * limit;
 
   return db
     .query(
       `SELECT * FROM comments
-      WHERE comments.review_id= ${review_id};`
+      WHERE comments.review_id= ${review_id}
+      LIMIT $1 OFFSET $2;`,
+      [limit, offset]
     )
     .then((result) => {
-      const comments = result.rows;
-      //console.log(comments);
-      return comments;
+      if (result.rows.length === 0) {
+        return checkIfExist(`reviews`, `review_id`, review_id).then(() => {
+          return result.rows;
+        });
+      }
+      return result.rows;
     });
 };
 
