@@ -77,7 +77,7 @@ exports.selectReviews = async (req) => {
   //console.log(reviewsTable, "<= reviewsTable");
   //console.log(dollarSign, "<= dollarSign");
   return db.query(reviewsTable, dollarSign).then((results) => {
-    //console.log(results.rows, results.rows.length);
+    // console.log(results);
     const reviews = results.rows;
     return reviews;
   });
