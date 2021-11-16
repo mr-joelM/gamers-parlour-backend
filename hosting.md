@@ -2,7 +2,7 @@
 
 **\*\* This file is only relevant for an advanced task. You can ignore this until then! \*\***
 
-Before you do this, please make your own public repo so that you can share this project as part of your portfolio by doing the following:
+.Before you do this, please make your own public repo so that you can share this project as part of your portfolio by doing the following:
 
 1. Create a new _public_ GitHub repository, and do **not** initialise the project with a readme, .gitignore or license.
 2. From your _local_ copy of your repository, push your code to your new respository using the following commands:
@@ -95,21 +95,21 @@ This will establish an environment variable called `DATABASE_URL`, and set it to
 At the top of your `connection.js`, assign the value of the NODE_ENV to a variable (you may have already created this variable):
 
 ```js
-const ENV = process.env.NODE_ENV || 'development';
+const ENV = process.env.NODE_ENV || 'development'
 ```
 
 It is important to check that we have either the development/test PGDATABASE variable or the production DATABASE_URL. If both are missing from the `process.env`, then throw an error.
 
 ```js
 if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
-  throw new Error('PGDATABASE or DATABASE_URL not set');
+  throw new Error('PGDATABASE or DATABASE_URL not set')
 }
 ```
 
 Next, add a `config` variable. If the `ENV` is production, this variable should hold a config object, containing the `DATABASE_URL` at the `connectionString` key, along with an additional `ssl.rejectUnauthorized` property set to false. This allows you to connect to the hosted database from your local machine.
 
 ```js
-const ENV = process.env.NODE_ENV || 'development';
+const ENV = process.env.NODE_ENV || 'development'
 // ...
 const config =
   ENV === 'production'
@@ -119,9 +119,9 @@ const config =
           rejectUnauthorized: false,
         },
       }
-    : {};
+    : {}
 
-module.exports = new Pool(config);
+module.exports = new Pool(config)
 
 // ...
 ```
@@ -139,9 +139,9 @@ It should check whether you're in production, and if you are, it should connect 
 In `listen.js`, make sure you take the PORT off the environment object if it's provided. This is because heroku will provide a port if in production.
 
 ```js
-const { PORT = 9090 } = process.env;
+const { PORT = 9090 } = process.env
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}...`));
+app.listen(PORT, () => console.log(`Listening on ${PORT}...`))
 ```
 
 ## 8. Add a start script
