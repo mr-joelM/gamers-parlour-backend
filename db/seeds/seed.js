@@ -1,15 +1,15 @@
-const format = require("pg-format");
-const db = require("../connection");
+const format = require('pg-format')
+const db = require('../connection')
 const {
   formatCategoriesData,
   formatUsersData,
   formatReviewsData,
   formatCommentsData,
-} = require("../utils/data-manipulation");
+} = require('../utils/data-manipulation')
 const seed = async (data) => {
-  const { categoryData, commentData, reviewData, userData } = data;
+  const { categoryData, commentData, reviewData, userData } = data
 
-  /* THE OLD WAY! */
+  /* THE OLD WAY! kept for future ref */
   // return db
   //   .query('DROP TABLE IF EXISTS comments;')
   //   .then(()=>{
@@ -25,15 +25,15 @@ const seed = async (data) => {
   //     console.log('all tables dropped')
   //   })
 
-  await db.query("DROP TABLE IF EXISTS comments;");
+  await db.query('DROP TABLE IF EXISTS comments;')
 
-  await db.query("DROP TABLE IF EXISTS reviews;");
+  await db.query('DROP TABLE IF EXISTS reviews;')
 
-  await db.query("DROP TABLE IF EXISTS users;");
+  await db.query('DROP TABLE IF EXISTS users;')
 
-  await db.query("DROP TABLE IF EXISTS categories;");
+  await db.query('DROP TABLE IF EXISTS categories;')
 
-  console.log("All tables dropped");
+  console.log('All tables dropped')
 
   // 1. create tables
   await db.query(`
@@ -41,7 +41,7 @@ const seed = async (data) => {
         slug VARCHAR(40) UNIQUE PRIMARY KEY,
         description TEXT NOT NULL
       );
-    `);
+    `)
 
   await db.query(`
       CREATE TABLE users (
@@ -49,7 +49,7 @@ const seed = async (data) => {
         avatar_url TEXT,
         name VARCHAR(55) NOT NULL
       );
-    `);
+    `)
 
   await db.query(`
       CREATE TABLE reviews (
@@ -63,7 +63,7 @@ const seed = async (data) => {
         owner VARCHAR(40) REFERENCES users(username) NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()NOT NULL
       );
-    `);
+    `)
 
   await db.query(`
       CREATE TABLE comments (
@@ -74,12 +74,12 @@ const seed = async (data) => {
         created_at TIMESTAMP DEFAULT NOW()NOT NULL,
         body TEXT NOT NULL
       );
-    `);
+    `)
 
-  console.log("All table created");
+  console.log('All table created')
 
   // 2. insert data
-  const formattedCategoriesData = formatCategoriesData(categoryData);
+  const formattedCategoriesData = formatCategoriesData(categoryData)
   const categoriesInsertString = format(
     `
       INSERT INTO categories
@@ -89,11 +89,11 @@ const seed = async (data) => {
       RETURNING *;
     `,
     formattedCategoriesData
-  );
-  const categoriesTable = await db.query(categoriesInsertString);
+  )
+  const categoriesTable = await db.query(categoriesInsertString)
   // console.log(categoriesTable.rows);
 
-  const formattedUsersData = formatUsersData(userData);
+  const formattedUsersData = formatUsersData(userData)
   const usersInsertString = format(
     `
       INSERT INTO users
@@ -103,11 +103,11 @@ const seed = async (data) => {
       RETURNING *;
     `,
     formattedUsersData
-  );
-  const usersTable = await db.query(usersInsertString);
+  )
+  const usersTable = await db.query(usersInsertString)
   //console.log(usersTable.rows)
 
-  const formattedReviewsData = formatReviewsData(reviewData);
+  const formattedReviewsData = formatReviewsData(reviewData)
   const reviewsInsertString = format(
     `
     INSERT INTO reviews
@@ -117,14 +117,14 @@ const seed = async (data) => {
       RETURNING *;
     `,
     formattedReviewsData
-  );
-  const reviewsTable = await db.query(reviewsInsertString);
+  )
+  const reviewsTable = await db.query(reviewsInsertString)
   //console.log(reviewsTable.rows)
 
   const formattedCommentsData = formatCommentsData(
     commentData,
     reviewsTable.rows
-  );
+  )
   const commentsInsertString = format(
     `
     INSERT INTO comments
@@ -134,9 +134,9 @@ const seed = async (data) => {
       RETURNING *;
     `,
     formattedCommentsData
-  );
-  const commentsTable = await db.query(commentsInsertString);
+  )
+  const commentsTable = await db.query(commentsInsertString)
   //console.log(commentsTable.rows);
-};
+}
 
-module.exports = seed;
+module.exports = seed
