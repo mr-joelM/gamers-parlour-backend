@@ -89,6 +89,9 @@ The technologies and packages used for Gamers Parlour Backend:
 - [Node.js](https://nodejs.org/en/) v14.17.4 LTS
 - [Postgres](https://www.postgresql.org/) v13.0.0
   Project dependencies:
+  jest: v27.0.6
+  nodemon: v2.0.12
+  supertest: v6.1.4
 
 - [Express](https://expressjs.com/) v4.17.1
 - [Node-postgres](https://www.postgresql.org/) v8.7.1
